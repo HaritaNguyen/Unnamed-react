@@ -2,6 +2,8 @@
 
 import * as z from "zod"
 
+import { useState, useTransition } from "react"
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 
@@ -11,15 +13,37 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
 
+import { register } from "@/actions/register"
+import { FormError } from "./formError";
+import { FormSuccess } from "./formSuccess";
+
 export function RegisterForm() {
+    const [error, setError] = useState<string | undefined>("")
+    const [success, setSuccess] = useState<string | undefined>("")
+
+    const [isPending, startTransition] = useTransition()
+
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
         defaultValues: {
             email: "",
-            password: ""
-        }
-    })
+            password: "",
+            name: "",
+        },
+    });
 
+    const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+        setError("")
+        setSuccess("")
+
+        startTransition(() => {
+            register(values)
+                .then((data) => {
+                    setError(data.error)
+                    setSuccess(data.success)
+                })
+        })
+    }
     return (
         <CardAuth
             header="Sign up"
@@ -29,11 +53,17 @@ export function RegisterForm() {
         >
             <Form {...form}>
                 <form
-                    onSubmit={form.handleSubmit(() => { })}
+                    onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-2"
                 >
                     <div className="space-y-4">
-                    <FormField
+                        <FormError
+                            message={error}
+                        />
+                        <FormSuccess
+                            message={success}
+                        />
+                        <FormField
                             control={form.control}
                             name="name"
                             render={({ field }) => (
@@ -85,6 +115,7 @@ export function RegisterForm() {
                             )}
                         />
                         <Button
+                            disabled={isPending}
                             type="submit"
                             className="w-full bg-gradient-to-br from-blue-600 to-fuchsia-400 bg-blend-multiply hover:bg-gray-400 transition"
                         >Login</Button>

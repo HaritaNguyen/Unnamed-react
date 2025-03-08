@@ -2,6 +2,8 @@
 
 import * as z from "zod"
 
+import { useState, useTransition } from "react"
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 
@@ -11,7 +13,17 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
 
+import { FormSuccess } from "@/components/_react/_auth/formSuccess";
+import { FormError } from "@/components/_react/_auth/formError"
+
+import { login } from "@/actions/login"
+
 export function LoginForm() {
+    const [error, setError] = useState<string | undefined>("")
+    const [success, setSuccess] = useState<string | undefined>("")
+
+    const [isPending, startTransition] = useTransition()
+
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
         defaultValues: {
@@ -19,6 +31,19 @@ export function LoginForm() {
             password: ""
         }
     })
+
+    const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+        setError("")
+        setSuccess("")
+
+        startTransition(() => {
+            login(values)
+                .then((data) => {
+                    setError(data?.error)
+                    // setSuccess(data.success)
+                })
+        })
+    }
 
     return (
         <CardAuth
@@ -29,10 +54,16 @@ export function LoginForm() {
         >
             <Form {...form}>
                 <form
-                    onSubmit={form.handleSubmit(() => { })}
+                    onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-2"
                 >
                     <div className="space-y-4">
+                        <FormError
+                            message={error}
+                        />
+                        <FormSuccess
+                            message={success}
+                        />
                         <FormField
                             control={form.control}
                             name="email"
@@ -51,22 +82,23 @@ export function LoginForm() {
                                 </FormItem>
                             )}
                         /><FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Password</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        {...field}
-                                        type="password"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <Button
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Password</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            type="password"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <Button
+                            disabled={isPending}
                             type="submit"
                             className="w-full bg-gradient-to-br from-blue-600 to-fuchsia-400 bg-blend-multiply hover:bg-gray-400 transition"
                         >Login</Button>
