@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/co
 interface CardAuthProp {
     children: React.ReactNode;
     header: string;
-    label: string;
+    label?: string;
     href: string;
     backButton: string;
 }

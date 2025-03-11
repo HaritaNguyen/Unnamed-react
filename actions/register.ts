@@ -7,6 +7,8 @@ import bcrypt from "bcrypt"
 import { RegisterSchema } from "@/schemas"
 import { getUserByEmail } from "@/data/user"
 import { prisma } from "@/lib/prisma"
+import { generationVerificationToken } from "@/lib/token"
+import { sendVerificationEmail } from "@/lib/mail"
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
     const validatedFields =  RegisterSchema.safeParse(values);
@@ -30,6 +32,11 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
         }
     })
 
+    const verificationToken = await generationVerificationToken(email);
 
-    return { success : "Complete create an account and welcome"}
+    await sendVerificationEmail(
+        verificationToken.email, verificationToken.token
+    )
+
+    return { success : "Complete create an account! Please check the email to verify"}
 }

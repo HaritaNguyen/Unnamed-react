@@ -18,7 +18,7 @@ import { FormError } from "@/components/_react/_auth/formError"
 
 import { login } from "@/actions/login"
 
-export function LoginForm() {
+export function LoginForm() {    
     const [error, setError] = useState<string | undefined>("")
     const [success, setSuccess] = useState<string | undefined>("")
 
@@ -40,7 +40,7 @@ export function LoginForm() {
             login(values)
                 .then((data) => {
                     setError(data?.error)
-                    // setSuccess(data.success)
+                    setSuccess(data?.success)
                 })
         })
     }
