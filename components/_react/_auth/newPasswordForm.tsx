@@ -8,37 +8,40 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { CardAuth } from "./cardAuth";
-import { LoginSchema } from "@/schemas";
+import { NewPasswordSchemas } from "@/schemas";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
 
 import { FormSuccess } from "@/components/_react/_auth/formSuccess";
-import { FormError } from "@/components/_react/_auth/formError"
+import { FormError } from "@/components/_react/_auth/formError";
 
-import { login } from "@/actions/login"
+import { useSearchParams } from "next/navigation";
+import { newPassword } from "@/actions/newPassword";
 import Link from "next/link";
 
-export function LoginForm() {
+export function NewPasswordForm() {
+    const searchParams = useSearchParams()
+    const token = searchParams.get("token")
+
     const [error, setError] = useState<string | undefined>("")
     const [success, setSuccess] = useState<string | undefined>("")
 
     const [isPending, startTransition] = useTransition()
 
-    const form = useForm<z.infer<typeof LoginSchema>>({
-        resolver: zodResolver(LoginSchema),
+    const form = useForm<z.infer<typeof NewPasswordSchemas>>({
+        resolver: zodResolver(NewPasswordSchemas),
         defaultValues: {
-            email: "",
-            password: ""
+            password: "",
         }
     })
 
-    const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+    const onSubmit = (values: z.infer<typeof NewPasswordSchemas>) => {
         setError("")
         setSuccess("")
 
         startTransition(() => {
-            login(values)
+            newPassword(values, token)
                 .then((data) => {
                     setError(data?.error)
                     setSuccess(data?.success)
@@ -48,10 +51,9 @@ export function LoginForm() {
 
     return (
         <CardAuth
-            header="Sign in"
-            label="Welcome back"
-            href="/register"
-            backButton="Didn't have an accounts?"
+            header="Update the password"
+            label="Let's update and must remembers"
+            href="/login"
         >
             <Form {...form}>
                 <form
@@ -67,50 +69,40 @@ export function LoginForm() {
                         />
                         <FormField
                             control={form.control}
-                            name="email"
+                            name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email</FormLabel>
+                                    <FormLabel>Update password</FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
-                                            placeholder="name@example.com"
-                                            type="email"
+                                            type="password"
                                             className="max-w-full"
                                         />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
-                        /><FormField
-                            control={form.control}
-                            name="password"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Password</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            type="password"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                    <Button
-                                        variant={"link"}
-                                        className="px-0 justify-start"
-                                    >
-                                        <Link href="/reset">
-                                            Forgot password?
-                                        </Link>
-                                    </Button>
-                                </FormItem>
-                            )}
                         />
-                        <Button
-                            disabled={isPending}
-                            type="submit"
-                            className="w-full bg-gradient-to-br from-blue-600 to-fuchsia-400 bg-blend-multiply hover:bg-gray-400 transition"
-                        >Login</Button>
+                        {!error && !success && (
+                            <Button
+                                disabled={isPending}
+                                type="submit"
+                                className='w-full bg-gradient-to-br from-emerald-600 to-purple-400 bg-blend-multiply hover:bg-gray-400 transition'
+                            >
+                                Update the password
+                            </Button>
+                        )}
+                        {success && (
+                            <Link href="/login">
+                            <Button
+                                disabled={isPending}
+                                className={`w-full bg-gradient-to-br from-cyan-600 to-yellow-400 bg-blend-multiply hover:bg-gray-400 transition ${!success ? "invisible" : "visible"}`}
+                            >
+                                Return to login
+                            </Button>
+                        </Link>
+                        )}
                     </div>
                 </form>
             </Form>
