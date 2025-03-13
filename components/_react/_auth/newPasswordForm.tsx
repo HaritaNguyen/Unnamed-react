@@ -53,7 +53,6 @@ export function NewPasswordForm() {
         <CardAuth
             header="Update the password"
             label="Let's update and must remembers"
-            href="/login"
         >
             <Form {...form}>
                 <form
@@ -95,11 +94,11 @@ export function NewPasswordForm() {
                         )}
                         {success && (
                             <Link href="/login">
-                            <Button
-                                disabled={isPending}
-                                className={`w-full bg-gradient-to-br from-cyan-600 to-yellow-400 bg-blend-multiply hover:bg-gray-400 transition ${!success ? "invisible" : "visible"}`}
-                            >
-                                Return to login
+                                <Button
+                                    disabled={isPending}
+                                    className={`w-full bg-gradient-to-br from-cyan-600 to-yellow-400 bg-blend-multiply hover:bg-gray-400 transition ${!success ? "invisible" : "visible"}`}
+                                >
+                                    Return to login
                             </Button>
                         </Link>
                         )}

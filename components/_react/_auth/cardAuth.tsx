@@ -5,7 +5,7 @@ interface CardAuthProp {
     children: React.ReactNode;
     header: string;
     label?: string;
-    href: string;
+    href?: string;
     backButton?: string;
 }
 
