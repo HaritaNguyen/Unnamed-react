@@ -118,7 +118,7 @@ export function RegisterForm() {
                             disabled={isPending}
                             type="submit"
                             className="w-full bg-gradient-to-br from-blue-600 to-fuchsia-400 bg-blend-multiply hover:bg-gray-400 transition"
-                        >Login</Button>
+                        >Register</Button>
                     </div>
                 </form>
             </Form>
