@@ -72,6 +72,7 @@ export function RegisterForm() {
                                     <FormControl>
                                         <Input
                                             {...field}
+                                            disabled={isPending}
                                             type="text"
                                             className="max-w-full"
                                         />
@@ -89,6 +90,7 @@ export function RegisterForm() {
                                     <FormControl>
                                         <Input
                                             {...field}
+                                            disabled={isPending}
                                             placeholder="name@example.com"
                                             type="email"
                                             className="max-w-full"
@@ -107,6 +109,7 @@ export function RegisterForm() {
                                     <FormControl>
                                         <Input
                                             {...field}
+                                            disabled={isPending}
                                             type="password"
                                         />
                                     </FormControl>

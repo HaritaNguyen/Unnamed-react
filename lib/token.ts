@@ -1,8 +1,34 @@
+import { v4 as uuidv4 } from "uuid"
+import crypto from "crypto"
+
 import { getVerificationByEmail } from "@/data/vertfication-token";
 import { getPRTByEmail } from "@/data/reset-password-token";
+import { get2FTByEmail } from "@/data/2f-token";
 
-import { v4 as uuidv4 } from "uuid"
 import { prisma } from "@/lib/prisma";
+
+export const generation2FT = async ( email : string ) => {
+    const token = crypto.randomInt(10_000_000, 100_000_000).toString()
+    const expires = new Date(new Date().getTime() + 600 * 1000)
+
+    const existingToken = await get2FTByEmail(email);
+
+    if (existingToken) {
+        await prisma.twoFactorToken.delete({
+            where : { id : existingToken.id }
+        })
+    }
+
+    const tFT = await prisma.twoFactorToken.create({
+        data : {
+            email,
+            token,
+            expires
+        }
+    })
+
+    return tFT
+}
 
 export const generationPRT = async ( email : string ) => {
     const token = uuidv4();

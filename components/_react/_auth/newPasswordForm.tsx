@@ -76,6 +76,7 @@ export function NewPasswordForm() {
                                         <Input
                                             {...field}
                                             type="password"
+                                            disabled={!!success}
                                             className="max-w-full"
                                         />
                                     </FormControl>
