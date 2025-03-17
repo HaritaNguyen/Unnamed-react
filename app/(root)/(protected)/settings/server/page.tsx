@@ -2,21 +2,15 @@
 
 import { logout } from "@/actions/logout";
 import { useCurrentUser } from "@/hooks/useCurrenctUser";
+import { UserInfo } from "@/app/(root)/(protected)/_components/user-info";
 
-export default function HomePage() {
+export default function SettingsPage() {
     const user = useCurrentUser();
     
     const onClick = () => {
         logout()
     }
     return (
-        <div>
-            <p>
-                {JSON.stringify(user)}
-            </p>
-            <button onClick={onClick}>
-                Sign out
-            </button>
-        </div>
+        <UserInfo header="Server Setting" label="Server Configuration" user={user}/>
     );
 }
